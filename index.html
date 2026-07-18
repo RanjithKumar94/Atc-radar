@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATC Radar Simulator</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div id="topbar">
+    <h2>ATC RADAR SIMULATOR</h2>
+
+    <div id="controls">
+        <button id="pauseBtn">Pause</button>
+        <button id="speed1">1x</button>
+        <button id="speed2">2x</button>
+        <button id="speed4">4x</button>
+    </div>
+</div>
+
+<div id="main">
+
+    <div id="radarContainer">
+
+        <canvas id="radarCanvas" width="900" height="900"></canvas>
+
+    </div>
+
+    <div id="sidePanel">
+
+        <h3>Selected Aircraft</h3>
+
+        <div id="aircraftInfo">
+
+            <p>Callsign : --</p>
+            <p>Altitude : --</p>
+            <p>Heading : --</p>
+            <p>Speed : --</p>
+
+        </div>
+
+        <hr>
+
+        <h3>Command</h3>
+
+        <label>Heading</label>
+        <input type="number" id="heading">
+
+        <label>Altitude</label>
+        <input type="number" id="altitude">
+
+        <label>Speed</label>
+        <input type="number" id="speed">
+
+        <button id="sendCommand">SEND</button>
+
+        <hr>
+
+        <h3>Arrival Strips</h3>
+
+        <table id="arrivalTable">
+
+            <tr>
+                <th>Callsign</th>
+                <th>FL</th>
+            </tr>
+
+        </table>
+
+        <h3>Departure Strips</h3>
+
+        <table id="departureTable">
+
+            <tr>
+                <th>Callsign</th>
+                <th>FL</th>
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="js/aircraft.js"></script>
+<script src="js/radar.js"></script>
+<script src="js/strips.js"></script>
+<script src="js/scenario.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
