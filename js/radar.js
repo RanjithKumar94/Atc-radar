@@ -33,17 +33,30 @@ ctx.moveTo(CX,CY-R);
 ctx.lineTo(CX,CY+R);
 ctx.stroke();
 
-// Runway
-ctx.lineWidth=3;
+// Runway 08/26
+ctx.lineWidth = 4;
+
+let rwAngle = (80 - 90) * Math.PI / 180;
+let len = 80;
+
+let x1 = CX - Math.cos(rwAngle) * len;
+let y1 = CY - Math.sin(rwAngle) * len;
+
+let x2 = CX + Math.cos(rwAngle) * len;
+let y2 = CY + Math.sin(rwAngle) * len;
+
 ctx.beginPath();
-ctx.moveTo(CX-70,CY);
-ctx.lineTo(CX+70,CY);
+ctx.moveTo(x1, y1);
+ctx.lineTo(x2, y2);
 ctx.stroke();
 
-ctx.fillStyle="#00ff66";
-ctx.font="16px Arial";
-ctx.fillText("08",CX-90,CY-8);
-ctx.fillText("26",CX+75,CY-8);
+ctx.font = "16px Arial";
+ctx.fillStyle = "#00ff66";
+ctx.fillText("08", x1 - 18, y1 + 5);
+ctx.fillText("26", x2 + 5, y2 + 5);
+const radials = [70,88,120,190,252,270,300,350];
+
+ctx.lineWidth = 1;
 
 // Aircraft
 aircraft.forEach(ac=>{
@@ -73,5 +86,21 @@ ctx.fillText(ac.speed+"KT",ac.x+35,ac.y+10);
 requestAnimationFrame(drawRadar);
 
 }
+const radials = [70,88,120,190,252,270,300,350];
 
+ctx.lineWidth = 1;
+
+radials.forEach(r => {
+
+    let a = (r - 90) * Math.PI / 180;
+
+    ctx.beginPath();
+    ctx.moveTo(CX,CY);
+    ctx.lineTo(
+        CX + Math.cos(a)*R,
+        CY + Math.sin(a)*R
+    );
+    ctx.stroke();
+
+});
 drawRadar();
