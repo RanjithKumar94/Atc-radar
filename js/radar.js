@@ -213,6 +213,7 @@ function drawRadar(){
     drawCCB();
 
     drawAircraft();
+    drawClock();
 
     requestAnimationFrame(drawRadar);
 
