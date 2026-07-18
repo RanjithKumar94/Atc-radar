@@ -1,61 +1,74 @@
-
 const canvas = document.getElementById("radarCanvas");
 const ctx = canvas.getContext("2d");
 
-const W = canvas.width;
-const H = canvas.height;
-
-const CX = W / 2;
-const CY = H / 2;
-
-const RADIUS = 400;
+const CX = canvas.width/2;
+const CY = canvas.height/2;
+const R = 400;
 
 function drawRadar(){
 
-ctx.clearRect(0,0,W,H);
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
 // Background
 ctx.fillStyle="#001100";
-ctx.fillRect(0,0,W,H);
+ctx.fillRect(0,0,canvas.width,canvas.height);
 
-// Range Rings
+// Rings
 ctx.strokeStyle="#00ff66";
-ctx.lineWidth=1;
 
 for(let i=1;i<=4;i++){
-
 ctx.beginPath();
-ctx.arc(CX,CY,RADIUS*i/4,0,Math.PI*2);
+ctx.arc(CX,CY,R*i/4,0,Math.PI*2);
 ctx.stroke();
-
 }
 
 // Cross
-
 ctx.beginPath();
-ctx.moveTo(CX-RADIUS,CY);
-ctx.lineTo(CX+RADIUS,CY);
+ctx.moveTo(CX-R,CY);
+ctx.lineTo(CX+R,CY);
 ctx.stroke();
 
 ctx.beginPath();
-ctx.moveTo(CX,CY-RADIUS);
-ctx.lineTo(CX,CY+RADIUS);
+ctx.moveTo(CX,CY-R);
+ctx.lineTo(CX,CY+R);
 ctx.stroke();
 
-// Runway 08/26
-
-ctx.lineWidth=4;
-
+// Runway
+ctx.lineWidth=3;
 ctx.beginPath();
 ctx.moveTo(CX-70,CY);
 ctx.lineTo(CX+70,CY);
 ctx.stroke();
 
 ctx.fillStyle="#00ff66";
-ctx.font="18px Arial";
+ctx.font="16px Arial";
+ctx.fillText("08",CX-90,CY-8);
+ctx.fillText("26",CX+75,CY-8);
 
-ctx.fillText("08",CX-95,CY-10);
-ctx.fillText("26",CX+75,CY-10);
+// Aircraft
+aircraft.forEach(ac=>{
+
+// Radar target
+ctx.fillStyle="#00ff66";
+ctx.beginPath();
+ctx.arc(ac.x,ac.y,4,0,Math.PI*2);
+ctx.fill();
+
+// Leader line
+ctx.beginPath();
+ctx.moveTo(ac.x,ac.y);
+ctx.lineTo(ac.x+30,ac.y-25);
+ctx.stroke();
+
+// Label
+ctx.font="13px monospace";
+
+ctx.fillText(ac.callsign,ac.x+35,ac.y-35);
+ctx.fillText("FL"+ac.level+"→"+ac.assignedLevel,ac.x+35,ac.y-20);
+ctx.fillText("HDG"+ac.heading+"→"+ac.assignedHeading,ac.x+35,ac.y-5);
+ctx.fillText(ac.speed+"KT",ac.x+35,ac.y+10);
+
+});
 
 requestAnimationFrame(drawRadar);
 
