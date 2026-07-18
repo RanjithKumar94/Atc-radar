@@ -179,9 +179,8 @@ function drawRoutes(){
 // RADAR SWEEP
 // ------------------------------
 
-let sweepAngle = 0;
-
-function drawSweep(){
+//functionction sweepAngle =ion
+//drawSweep drawSweep(){
 
     const angle = (sweepAngle - 90) * Math.PI / 180;
 
