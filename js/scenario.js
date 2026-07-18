@@ -1,109 +1,58 @@
-// ===============================
-// CCB VOR (300 m south of runway midpoint)
-// ===============================
-
 const CCB = {
     x: 450,
     y: 470
 };
 
-// ===============================
-// ATS ROUTES
-// ===============================
+const ROUTES = [
+    {name:"B425", bearings:[190]},
+    {name:"W14", bearings:[350]},
+    {name:"G473", bearings:[300,120]},
+    {name:"R416", bearings:[70]},
+    {name:"Q1", bearings:[252]},
+    {name:"Q2", bearings:[270]}
+];
 
-const routes = {
+function drawRoutes(ctx){
 
-    // Bidirectional
-    B425: {
-        name: "B425",
-        radial: 190,
-        bidirectional: true,
-        arrival: true,
-        departure: true
-    },
+    ctx.strokeStyle="#009900";
+    ctx.lineWidth=1;
 
-    W14: {
-        name: "W14",
-        radial: 350,
-        bidirectional: true,
-        arrival: true,
-        departure: true
-    },
+    ROUTES.forEach(route=>{
 
-    G473: {
-        name: "G473",
-        inbound: 300,
-        outbound: 120,
-        viaCCB: true,
-        bidirectional: true,
-        arrival: true,
-        departure: true
-    },
+        route.bearings.forEach(bearing=>{
 
-    R416: {
-        name: "R416",
-        radial: 70,
-        bidirectional: true,
-        arrival: true,
-        departure: true
-    },
+            let a=(bearing-90)*Math.PI/180;
 
-    Q1: {
-        name: "Q1",
-        radial: 252,
-        bidirectional: true,
-        arrival: true,
-        departure: false      // Sector rule
-    },
+            ctx.beginPath();
+            ctx.moveTo(CCB.x,CCB.y);
 
-    Q2: {
-        name: "Q2",
-        radial: 270,
-        bidirectional: false,
-        arrival: false,
-        departure: true       // Departure only
-    }
+            ctx.lineTo(
+                CCB.x+Math.cos(a)*420,
+                CCB.y+Math.sin(a)*420
+            );
 
-};
+            ctx.stroke();
 
-// ===============================
-// Draw ATS routes
-// ===============================
+            ctx.fillStyle="#00ff66";
+            ctx.font="12px Arial";
 
-function drawRoutes(ctx) {
+            ctx.fillText(
+                route.name,
+                CCB.x+Math.cos(a)*220,
+                CCB.y+Math.sin(a)*220
+            );
 
-    ctx.strokeStyle = "#006600";
-    ctx.lineWidth = 1;
-
-    Object.values(routes).forEach(route => {
-
-        if(route.name === "G473"){
-
-            drawRadial(route.inbound);
-            drawRadial(route.outbound);
-
-        }else{
-
-            drawRadial(route.radial);
-
-        }
+        });
 
     });
 
-}
-
-function drawRadial(radial){
-
-    let angle = (radial - 90) * Math.PI / 180;
-
+    // Draw CCB VOR
+    ctx.fillStyle="#00ffff";
     ctx.beginPath();
-    ctx.moveTo(CCB.x, CCB.y);
+    ctx.arc(CCB.x,CCB.y,5,0,Math.PI*2);
+    ctx.fill();
 
-    ctx.lineTo(
-        CCB.x + Math.cos(angle) * 400,
-        CCB.y + Math.sin(angle) * 400
-    );
-
-    ctx.stroke();
+    ctx.fillStyle="#00ffff";
+    ctx.fillText("CCB",CCB.x+8,CCB.y-8);
 
 }
