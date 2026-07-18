@@ -3,32 +3,28 @@ function moveAircraft() {
     aircraft.forEach(ac => {
 
         // Turn towards assigned heading
-        let diff = (ac.assignedHeading - ac.heading + 360) % 360;
+        if (ac.heading !== ac.assignedHeading) {
 
-        if(diff > 180){
-            ac.heading -= 1;
-        }else if(diff > 0){
-            ac.heading += 1;
+            let diff = (ac.assignedHeading - ac.heading + 360) % 360;
+
+            if (diff > 180)
+                ac.heading -= 1;
+            else
+                ac.heading += 1;
+
+            if (ac.heading < 0) ac.heading += 360;
+            if (ac.heading >= 360) ac.heading -= 360;
         }
 
-        if(ac.heading < 0) ac.heading += 360;
-        if(ac.heading >= 360) ac.heading -= 360;
+        // Convert aviation heading to canvas angle
+        let rad = (ac.heading - 90) * Math.PI / 180;
 
-        // Move
-        let rad = ac.heading * Math.PI / 180;
+        ac.x += Math.cos(rad) * 1.2;
+        ac.y += Math.sin(rad) * 1.2;
 
-        ac.x += Math.sin(rad) * 0.7;
-        ac.y -= Math.cos(rad) * 0.7;
-
-        // Climb / Descend
-        if(ac.level > ac.assignedLevel){
-            ac.level -= 1;
-        }
-
-        if(ac.level < ac.assignedLevel){
-            ac.level += 1;
-        }
-
+        // Climb/descend
+        if (ac.level < ac.assignedLevel) ac.level++;
+        if (ac.level > ac.assignedLevel) ac.level--;
     });
 
 }
