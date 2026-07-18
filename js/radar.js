@@ -222,3 +222,47 @@ function drawRadar(){
     requestAnimationFrame(drawRadar);
 
 }
+// ===============================
+// DRAW AIRCRAFT
+// ===============================
+
+function drawAircraft(){
+
+    if(typeof aircraft==="undefined") return;
+
+    aircraft.forEach(ac=>{
+
+        if(ac.active===false) return;
+
+        const pos=bearingToXY(ac.entryRadial,ac.distance);
+
+        ac.x=pos.x;
+        ac.y=pos.y;
+
+        // Aircraft target
+        ctx.fillStyle="#00ff00";
+        ctx.beginPath();
+        ctx.arc(ac.x,ac.y,3,0,Math.PI*2);
+        ctx.fill();
+
+        // Leader line
+        ctx.strokeStyle="#00ff00";
+        ctx.lineWidth=1;
+
+        ctx.beginPath();
+        ctx.moveTo(ac.x+3,ac.y-3);
+        ctx.lineTo(ac.x+35,ac.y-20);
+        ctx.stroke();
+
+        // Label
+        ctx.fillStyle="#00ff00";
+        ctx.font="14px Consolas";
+
+        ctx.fillText(ac.callsign,ac.x+40,ac.y-24);
+        ctx.fillText("FL"+ac.level,ac.x+40,ac.y-8);
+        ctx.fillText("HDG "+String(ac.heading).padStart(3,"0"),ac.x+40,ac.y+8);
+        ctx.fillText(ac.speed+"KT",ac.x+40,ac.y+24);
+
+    });
+
+}
