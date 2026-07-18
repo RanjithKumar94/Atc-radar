@@ -57,7 +57,17 @@ ctx.fillText("26", x2 + 5, y2 + 5);
 const radials = [70,88,120,190,252,270,300,350];
 
 ctx.lineWidth = 1;
+    
+drawRoutes(ctx);
 
+// Draw CCB VOR
+ctx.fillStyle = "#00ffff";
+
+ctx.beginPath();
+ctx.arc(CCB.x, CCB.y, 5, 0, Math.PI * 2);
+ctx.fill();
+
+ctx.fillText("CCB", CCB.x + 8, CCB.y - 8);
 // Aircraft
 aircraft.forEach(ac=>{
 
