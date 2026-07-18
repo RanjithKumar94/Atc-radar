@@ -1,98 +1,121 @@
-// ===============================
-// MAIN UPDATE LOOP
-// ===============================
+// =========================
+// SIMULATION CLOCK
+// =========================
 
-function moveAircraft() {
+let simHour = 2;
+let simMinute = 55;
+let simSecond = 0;
 
-    aircraft.forEach(ac => {
+// Aircraft not active initially
+aircraft.forEach(ac=>{
+    ac.active=false;
+});
 
-        // Move along route
-        if (ac.direction === "INBOUND") {
+// =========================
+// TIME FUNCTIONS
+// =========================
 
-            ac.distance -= 0.08;
+function toMinutes(t){
 
-        } else {
+    let p=t.split(":");
 
-            ac.distance += 0.08;
+    return parseInt(p[0])*60+parseInt(p[1]);
 
-        }
+}
 
-        // Aircraft position from route
-        updateAircraftPosition();
+function spawnOffset(type){
 
-        // Turn gradually
-        if (ac.heading !== ac.assignedHeading) {
+    switch(type){
 
-            let diff = (ac.assignedHeading - ac.heading + 360) % 360;
+        case "AT72":
+        case "DO228":
+            return 18;
 
-            if (diff > 180)
-                ac.heading--;
-            else
-                ac.heading++;
-
-            if (ac.heading < 0) ac.heading += 360;
-            if (ac.heading >= 360) ac.heading -= 360;
-
-        }
-
-        // Climb / Descend
-        if (ac.level < ac.assignedLevel)
-            ac.level++;
-
-        if (ac.level > ac.assignedLevel)
-            ac.level--;
-
-        // G473 passes CCB then exits on R120
-        if (ac.route === "G473" &&
-            ac.direction === "INBOUND" &&
-            ac.distance <= 0) {
-
-            ac.direction = "OUTBOUND";
-
-        }
-
-        // Arrivals land
-        if (ac.direction === "INBOUND" &&
-            ac.distance <= -2) {
-
-            ac.level = 0;
-            ac.remove = true;
-
-        }
-
-        // Departures leave sector
-        if (ac.direction === "OUTBOUND" &&
-            ac.distance >= 60) {
-
-            ac.remove = true;
-
-        }
-
-    });
-
-    // Remove aircraft
-    for (let i = aircraft.length - 1; i >= 0; i--) {
-
-        if (aircraft[i].remove) {
-
-            aircraft.splice(i, 1);
-
-        }
+        default:
+            return 14;
 
     }
 
 }
 
-// ===============================
-// START SIMULATION
-// ===============================
+function updateClock(){
 
-window.onload = function () {
+    simSecond++;
+
+    if(simSecond==60){
+
+        simSecond=0;
+        simMinute++;
+
+    }
+
+    if(simMinute==60){
+
+        simMinute=0;
+        simHour++;
+
+    }
+
+}
+
+function checkSpawn(){
+
+    let current=simHour*60+simMinute;
+
+    aircraft.forEach(ac=>{
+
+        if(ac.active) return;
+
+        let spawn=toMinutes(ac.ccbETA)-spawnOffset(ac.type);
+
+        if(current>=spawn){
+
+            ac.active=true;
+
+            ac.distance=60;
+
+        }
+
+    });
+
+}
+
+// =========================
+// AIRCRAFT MOVEMENT
+// =========================
+
+function moveAircraft(){
+
+    updateClock();
+
+    checkSpawn();
+
+    aircraft.forEach(ac=>{
+
+        if(!ac.active) return;
+
+        if(ac.direction=="INBOUND")
+            ac.distance-=0.08;
+
+        else
+            ac.distance+=0.08;
+
+    });
+
+    updateAircraftPosition();
+
+}
+
+// =========================
+// START
+// =========================
+
+window.onload=function(){
 
     updateAircraftPosition();
 
     drawRadar();
 
-    setInterval(moveAircraft, 100);
+    setInterval(moveAircraft,1000);
 
 };
