@@ -94,12 +94,11 @@ function bearingToXY(bearing, distanceNM){
     const scale = RADAR_RADIUS / NM_RADIUS;
 
     return {
-
         x: CCB.x + Math.cos(angle) * distanceNM * scale,
-
         y: CCB.y + Math.sin(angle) * distanceNM * scale
-
     };
+
+}
 // ===============================
 // DRAW RADAR RINGS
 // ===============================
