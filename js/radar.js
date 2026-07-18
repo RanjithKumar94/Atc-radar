@@ -1,278 +1,225 @@
-const canvas = document.getElementById("radarCanvas");
+// ===============================
+// RADAR CONFIGURATION
+// ===============================
+
+const canvas = document.getElementById("radar");
 const ctx = canvas.getContext("2d");
 
-const CX = canvas.width / 2;
-const CY = canvas.height / 2;
-const RADIUS = 400;
+canvas.width = 900;
+canvas.height = 900;
 
-// ------------------------------
-// AIRPORT
-// ------------------------------
+const CENTER_X = canvas.width / 2;
+const CENTER_Y = canvas.height / 2;
+
+const RADAR_RADIUS = 380;
+const NM_RADIUS = 60;
+
+// ===============================
+// CCB VOR
+// (300 m south of runway midpoint)
+// ===============================
+
+const CCB = {
+    x: CENTER_X,
+    y: CENTER_Y + 3
+};
+
+// ===============================
+// RUNWAY 08 / 26
+// ===============================
 
 const RUNWAY = {
     heading: 80,
-    length: 160
+    length: 120
 };
 
-const CCB = {
-    x: CX,
-    y: CY + 12    // ~300 m south of runway midpoint
-};
-
-// ------------------------------
-// ROUTES
-// ------------------------------
+// ===============================
+// ATS ROUTES
+// ===============================
 
 const ROUTES = [
 
-    {
-        name: "B425",
-        bearings: [190]
-    },
+{
+name:"B425",
+bearing:190,
+color:"#00ff66"
+},
 
-    {
-        name: "W14",
-        bearings: [350]
-    },
+{
+name:"W14",
+bearing:350,
+color:"#00ff66"
+},
 
-    {
-        name: "G473",
-        bearings: [300,120]
-    },
+{
+name:"R416",
+bearing:70,
+color:"#00ff66"
+},
 
-    {
-        name: "R416",
-        bearings: [70]
-    },
+{
+name:"Q1",
+bearing:252,
+color:"#00ff66"
+},
 
-    {
-        name: "Q1",
-        bearings: [252]
-    },
+{
+name:"Q2",
+bearing:270,
+color:"#00ff66"
+},
 
-    {
-        name: "Q2",
-        bearings: [270]
-    }
+{
+name:"G473_A",
+bearing:120,
+color:"#00ff66"
+},
+
+{
+name:"G473_B",
+bearing:300,
+color:"#00ff66"
+}
 
 ];
 
-function bearingToXY(bearing, distance){
+// ===============================
+// CONVERT BEARING TO X/Y
+// ===============================
+
+function bearingToXY(bearing, distanceNM){
 
     const angle = (bearing - 90) * Math.PI / 180;
 
+    const scale = RADAR_RADIUS / NM_RADIUS;
+
     return {
 
-        x: CCB.x + Math.cos(angle) * distance,
-        y: CCB.y + Math.sin(angle) * distance
+        x: CCB.x + Math.cos(angle) * distanceNM * scale,
+
+        y: CCB.y + Math.sin(angle) * distanceNM * scale
 
     };
+// ===============================
+// DRAW RADAR RINGS
+// ===============================
 
-}
+function drawRadarBackground(){
 
-function drawBackground(){
-
-    ctx.fillStyle="#001100";
+    ctx.fillStyle = "#001100";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    ctx.strokeStyle="#00aa44";
+    ctx.strokeStyle="#00ff55";
     ctx.lineWidth=1;
 
-    for(let i=1;i<=6;i++){
+    for(let nm=10; nm<=60; nm+=10){
+
+        let r=(RADAR_RADIUS/NM_RADIUS)*nm;
 
         ctx.beginPath();
-        ctx.arc(CX,CY,(RADIUS/6)*i,0,Math.PI*2);
+        ctx.arc(CCB.x,CCB.y,r,0,Math.PI*2);
         ctx.stroke();
 
     }
 
-    ctx.beginPath();
-    ctx.moveTo(CX-RADIUS,CY);
-    ctx.lineTo(CX+RADIUS,CY);
-    ctx.stroke();
+}
 
-    ctx.beginPath();
-    ctx.moveTo(CX,CY-RADIUS);
-    ctx.lineTo(CX,CY+RADIUS);
-    ctx.stroke();
-
-} 
-// ------------------------------
-// RUNWAY
-// ------------------------------
+// ===============================
+// DRAW RUNWAY
+// ===============================
 
 function drawRunway(){
 
-    const angle = (RUNWAY.heading - 90) * Math.PI / 180;
+    const p1=bearingToXY(260,10);
+    const p2=bearingToXY(80,10);
 
-    const x1 = CX - Math.cos(angle) * RUNWAY.length / 2;
-    const y1 = CY - Math.sin(angle) * RUNWAY.length / 2;
-
-    const x2 = CX + Math.cos(angle) * RUNWAY.length / 2;
-    const y2 = CY + Math.sin(angle) * RUNWAY.length / 2;
-
-    ctx.strokeStyle="#ffffff";
+    ctx.strokeStyle="white";
     ctx.lineWidth=4;
 
     ctx.beginPath();
-    ctx.moveTo(x1,y1);
-    ctx.lineTo(x2,y2);
+    ctx.moveTo(p1.x,p1.y);
+    ctx.lineTo(p2.x,p2.y);
     ctx.stroke();
 
-    ctx.fillStyle="#ffffff";
-    ctx.font="15px Arial";
+    ctx.fillStyle="white";
+    ctx.font="22px Arial";
 
-    ctx.fillText("08",x1-20,y1+8);
-    ctx.fillText("26",x2+8,y2+8);
+    ctx.fillText("08",p1.x-25,p1.y+10);
+    ctx.fillText("26",p2.x+10,p2.y+10);
 
 }
 
-// ------------------------------
-// CCB VOR
-// ------------------------------
+// ===============================
+// DRAW CCB
+// ===============================
 
 function drawCCB(){
 
     ctx.fillStyle="#00ffff";
 
     ctx.beginPath();
-    ctx.arc(CCB.x,CCB.y,5,0,Math.PI*2);
+    ctx.arc(CCB.x,CCB.y,4,0,Math.PI*2);
     ctx.fill();
 
-    ctx.font="13px Arial";
+    ctx.font="18px Arial";
+    ctx.fillStyle="#00ffff";
+
     ctx.fillText("CCB",CCB.x+8,CCB.y-8);
 
 }
 
-// ------------------------------
-// ATS ROUTES
-// ------------------------------
+// ===============================
+// DRAW ATS ROUTES
+// ===============================
 
 function drawRoutes(){
 
-    ctx.strokeStyle="#00ff66";
-    ctx.lineWidth=1;
+    ctx.strokeStyle="#00ff55";
+    ctx.lineWidth=2;
 
     ROUTES.forEach(route=>{
 
-        route.bearings.forEach(bearing=>{
-
-            const p = bearingToXY(bearing,RADIUS);
-
-            ctx.beginPath();
-            ctx.moveTo(CCB.x,CCB.y);
-            ctx.lineTo(p.x,p.y);
-            ctx.stroke();
-
-            const t = bearingToXY(bearing,RADIUS-40);
-
-            ctx.fillStyle="#00ff66";
-            ctx.font="12px Arial";
-            ctx.fillText(route.name,t.x,t.y);
-
-        });
-
-    });
-
-}
-// ------------------------------
-// RADAR SWEEP
-// ------------------------------
-
-//functionction sweepAngle =ion
-//drawSweep drawSweep(){
-
-    const angle = (sweepAngle - 90) * Math.PI / 180;
-
-    ctx.strokeStyle="#00ff00";
-    ctx.lineWidth=2;
-
-    ctx.beginPath();
-    ctx.moveTo(CX,CY);
-    ctx.lineTo(
-        CX + Math.cos(angle) * RADIUS,
-        CY + Math.sin(angle) * RADIUS
-    );
-    ctx.stroke();
-
-    sweepAngle += 1;
-
-    if(sweepAngle >= 360)
-        sweepAngle = 0;
-
-}
-
-// ------------------------------
-// AIRCRAFT
-// ------------------------------
-
-function drawAircraft(){
-
-    ctx.font="12px monospace";
-
-    aircraft.forEach(ac=>{
-
-        // Aircraft target
-        ctx.fillStyle="#00ff66";
+        const p=bearingToXY(route.bearing,60);
 
         ctx.beginPath();
-        ctx.arc(ac.x,ac.y,4,0,Math.PI*2);
-        ctx.fill();
-
-        // Leader line
-        ctx.strokeStyle="#00ff66";
-
-        ctx.beginPath();
-        ctx.moveTo(ac.x,ac.y);
-        ctx.lineTo(ac.x+28,ac.y-24);
+        ctx.moveTo(CCB.x,CCB.y);
+        ctx.lineTo(p.x,p.y);
         ctx.stroke();
 
-        // Label
-        ctx.fillStyle="#00ff66";
+        ctx.fillStyle="#00ff55";
+        ctx.font="18px Arial";
 
-        ctx.fillText(ac.callsign,ac.x+32,ac.y-36);
-        ctx.fillText(
-            "FL"+ac.level+"→"+ac.assignedLevel,
-            ac.x+32,
-            ac.y-22
-        );
+        let lx=bearingToXY(route.bearing,56);
 
-        ctx.fillText(
-            "HDG"+ac.heading+"→"+ac.assignedHeading,
-            ac.x+32,
-            ac.y-8
-        );
+        let label=route.name;
 
-        ctx.fillText(
-            ac.speed+"KT",
-            ac.x+32,
-            ac.y+6
-        );
+        if(route.name==="G473_A" || route.name==="G473_B")
+            label="G473";
+
+        ctx.fillText(label,lx.x,lx.y);
 
     });
 
 }
 
-// ------------------------------
-// MAIN DRAW FUNCTION
-// ------------------------------
+// ===============================
+// DRAW EVERYTHING
+// ===============================
 
 function drawRadar(){
 
-    drawBackground();
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    drawRadarBackground();
+
+    drawRoutes();
 
     drawRunway();
 
     drawCCB();
 
-    drawRoutes();
-
     drawAircraft();
-
-    drawSweep();
 
     requestAnimationFrame(drawRadar);
 
 }
-
-drawRadar();
